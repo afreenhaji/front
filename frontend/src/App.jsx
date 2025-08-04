@@ -19,8 +19,8 @@ export default function App() {
         <Routes>
             <Route path='/' element={userData ? <Layout /> : <Navigate to="/login" />}>
                 <Route index element={<Home />} />
-                <Route path="profiles" element={<Profiles />} />
-                <Route path="edit-profile" element={<EditProfile />} />
+                <Route path="/profiles" element={<Profiles />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
             </Route>
             <Route path='/signup' element={userData ? <Navigate to="/" /> : <Signup />} />
             <Route path='/login' element={userData ? <Navigate to="/" /> : <Login />} />

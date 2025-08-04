@@ -1,5 +1,7 @@
+import uploadOnCloudinary from "../config/cloudinary.js";
 import User from "../models/user.model.js";
 
+// Get My Profile
 export const getMyProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -9,6 +11,7 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
+// Update Profile Info (name, location, bio, etc.)
 export const updateMyProfile = async (req, res) => {
   try {
     const updates = req.body;
@@ -19,28 +22,52 @@ export const updateMyProfile = async (req, res) => {
   }
 };
 
+// Upload Profile Image to Cloudinary
 export const uploadProfileImage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No profile image uploaded' });
 
-    const url = `${process.env.SERVER_URL}/public/${req.file.filename}`;
-    await User.findByIdAndUpdate(req.user.id, { profileImage: url }, { new: true });
+    const localFilePath = req.file.path;
+    const imageUrl = await uploadOnCloudinary(localFilePath);
 
-    return res.json({ url });
+    if (!imageUrl) {
+      return res.status(500).json({ error: "Image upload to Cloudinary failed" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { profileImage: imageUrl },
+      { new: true }
+    );
+
+    res.json({ message: "Profile image updated", user });
   } catch (err) {
-    return res.status(500).json({ error: "Failed to upload profile image" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to upload profile image" });
   }
 };
 
+// Upload Cover Image to Cloudinary
 export const uploadCoverImage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No cover image uploaded' });
 
-    const url = `${process.env.SERVER_URL}/public/${req.file.filename}`;
-    await User.findByIdAndUpdate(req.user.id, { coverImage: url }, { new: true });
+    const localFilePath = req.file.path;
+    const imageUrl = await uploadOnCloudinary(localFilePath);
 
-    return res.json({ url });
+    if (!imageUrl) {
+      return res.status(500).json({ error: "Image upload to Cloudinary failed" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { coverImage: imageUrl },
+      { new: true }
+    );
+
+    res.json({ message: "Cover image updated", user });
   } catch (err) {
-    return res.status(500).json({ error: "Failed to upload cover image" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to upload cover image" });
   }
 };
