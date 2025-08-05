@@ -29,7 +29,7 @@ function Profiles() {
 
   const handleUpdateBio = async () => {
     try {
-      const res = await axios.put("http://localhost:8000/api/user/update-bio",
+      const res = await axios.put(`${serverUrl}/api/user/update-bio`,
         { bio: newBio },
         { withCredentials: true }
       );
