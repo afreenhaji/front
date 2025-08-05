@@ -1,47 +1,27 @@
-import axios from 'axios';
-import React, { createContext, useEffect, useState, useContext } from 'react';
-import { authDataContext } from './AuthContext';
+// src/context/UserContext.jsx
+import React, { createContext, useState, useEffect } from "react";
 
 export const userDataContext = createContext();
 
 function UserContext({ children }) {
-    const [userData, setUserData] = useState(null);
-    const { serverUrl } = useContext(authDataContext);
-    const [loading, setLoading] = useState(true); // Track loading state
+  const [userData, setUserData] = useState(() => {
+    const savedUser = localStorage.getItem("userData");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-    const getCurrentUser = async () => {
-        try {
-            let result = await axios.get(`${serverUrl}/api/auth/currentuser`, {
-                withCredentials: true
-            });
-            setUserData(result.data.user);
-            console.log("User logged in:", result.data.user);
-        } catch (error) {
-            console.log("User not logged in");
-            setUserData(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    if (userData) {
+      localStorage.setItem("userData", JSON.stringify(userData));
+    } else {
+      localStorage.removeItem("userData");
+    }
+  }, [userData]);
 
-    const fetchUserData = async () => {
-        try {
-          const res = await axios.get(`${serverUrl}/api/user/me`, { withCredentials: true });
-          setUserData(res.data);
-        } catch (err) {
-          console.error("Failed to fetch user data", err);
-        }
-      };
-
-    useEffect(() => {
-        getCurrentUser(),fetchUserData();  // Run once when app loads
-    }, []);
-
-    return (
-        <userDataContext.Provider value={{ userData, setUserData, loading , fetchUserData }}>
-            {children}
-        </userDataContext.Provider>
-    );
+  return (
+    <userDataContext.Provider value={{ userData, setUserData }}>
+      {children}
+    </userDataContext.Provider>
+  );
 }
 
 export default UserContext;

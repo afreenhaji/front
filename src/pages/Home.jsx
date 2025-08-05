@@ -1,12 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { userDataContext } from '../context/UserContext';
-import { FaCamera, FaUserCircle } from 'react-icons/fa';
+import { FaCamera, FaUserCircle, FaRegClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import CreatePostModal from '../components/CreatePostModal';
 import axios from 'axios';
 import { authDataContext } from '../context/AuthContext';
-import { FaRegClock } from 'react-icons/fa';
 
 function formatTime(dateStr) {
   const d = new Date(dateStr);
@@ -31,9 +30,7 @@ function Home() {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const res = await axios.get(`${serverUrl}/api/post/feed`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${serverUrl}/api/post/feed`, { withCredentials: true });
         setPosts(res.data);
       } catch (error) {
         console.error('Failed to fetch posts:', error);
@@ -45,6 +42,8 @@ function Home() {
 
     fetchPosts();
   }, [serverUrl, showPostModal]);
+
+  const skillsArray = Array.isArray(userData?.skill) ? userData.skill : [];
 
   return (
     <div className="relative w-full min-h-screen bg-[#f0efe7]">
@@ -58,11 +57,7 @@ function Home() {
           <div className="relative">
             <div className="w-full h-[120px] bg-gray-200 relative">
               {userData?.coverImage && (
-                <img
-                  src={userData.coverImage}
-                  alt="Cover"
-                  className="w-full h-full object-cover"
-                />
+                <img src={userData.coverImage} alt="Cover" className="w-full h-full object-cover" />
               )}
               <div
                 className="absolute top-2 right-2 bg-white p-1 rounded-full shadow cursor-pointer"
@@ -93,7 +88,7 @@ function Home() {
 
           <div className="mt-14 px-6 pb-6 text-center">
             <h2 className="text-xl font-semibold text-gray-800 capitalize">
-              {userData ? `${userData.firstName} ${userData.lastName}` : 'Loading...'}
+              {userData ? `${userData.firstName || ''} ${userData.lastName || ''}` : 'Loading...'}
             </h2>
             {userData?.location && (
               <p className="text-sm text-gray-500 mt-1">{userData.location}</p>
@@ -106,11 +101,12 @@ function Home() {
                 {userData.bio}
               </p>
             )}
-            {userData?.skill?.length > 0 && (
+
+            {skillsArray.length > 0 && (
               <div className="mt-4 text-left">
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 text-center">Skills</h3>
                 <ul className="space-y-2">
-                  {userData.skill.map((skill, index) => (
+                  {skillsArray.map((skill, index) => (
                     <li
                       key={index}
                       className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-md w-full text-center"
@@ -121,6 +117,7 @@ function Home() {
                 </ul>
               </div>
             )}
+
             <button
               onClick={() => navigate('/edit-profile')}
               className="w-full mt-5 bg-blue-600 text-white font-semibold rounded-full py-2 hover:bg-blue-700 transition"
