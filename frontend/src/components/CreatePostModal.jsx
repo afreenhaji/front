@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { userDataContext } from '../context/UserContext';
 import axios from 'axios';
+const { serverUrl } = useContext(authDataContext);
 
 function CreatePostModal({ onClose }) {
   const { userData } = useContext(userDataContext);
@@ -8,7 +9,7 @@ function CreatePostModal({ onClose }) {
 
   const handlePost = async () => {
     try {
-      await axios.post('http://localhost:8000/api/post/create', { description }, { withCredentials: true });
+      await axios.post('${serverUrl}/api/post/create', { description }, { withCredentials: true });
       onClose(); // Close modal on success
     } catch (error) {
       console.error("Post creation failed", error);

@@ -9,13 +9,13 @@ function Profiles() {
   const [userPosts, setUserPosts] = useState([]);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(userData?.bio || "");
-
+  const { serverUrl } = useContext(authDataContext);
   const navigate = useNavigate();  // <-- For navigation
 
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/post/user/${userData._id}`, { withCredentials: true });
+        const res = await axios.get(`${serverUrl}/api/post/user/${userData._id}`, { withCredentials: true });
         setUserPosts(res.data);
       } catch (error) {
         console.error("Failed to fetch user posts", error);
