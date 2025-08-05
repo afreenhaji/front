@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { userDataContext } from '../context/UserContext';
 import axios from 'axios';
+import { authDataContext } from '../context/AuthContext';
 
 function CreatePostModal({ onClose }) {
   const { userData } = useContext(userDataContext);
