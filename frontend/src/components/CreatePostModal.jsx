@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { userDataContext } from '../context/UserContext';
 import axios from 'axios';
-const { serverUrl } = useContext(authDataContext);
+
 
 function CreatePostModal({ onClose }) {
   const { userData } = useContext(userDataContext);
   const [description, setDescription] = useState('');
-
+  const { serverUrl } = useContext(authDataContext);
   const handlePost = async () => {
     try {
       await axios.post('${serverUrl}/api/post/create', { description }, { withCredentials: true });
