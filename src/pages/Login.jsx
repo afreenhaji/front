@@ -1,14 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import workLogo from '../assets/work.jpg';
-import axios from 'axios';
-import { userDataContext } from '../context/UserContext';
 import { authDataContext } from '../context/AuthContext';
+import { userDataContext } from '../context/UserContext';
+import axios from 'axios';
 
 function Login() {
   const navigate = useNavigate();
-  const { setUserData } = useContext(userDataContext);
   const { serverUrl } = useContext(authDataContext);
+  const { setUserData } = useContext(userDataContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,30 +20,40 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     setErr('');
+
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/login`,
         { email, password },
         { withCredentials: true }
       );
-      console.log("User logged in:", result.data);
       setUserData(result.data);
-      setLoading(false);
-      navigate('/');
+      navigate('/');  // Redirect to Home Page
     } catch (error) {
-      console.error("Login Error:", error.response?.data || error.message);
-      setErr(error.response?.data?.message || 'Login failed');
+      console.error(error);
+      setErr(error?.response?.data?.message || 'Login failed');
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 relative flex items-center justify-center px-4">
+      {/* Logo at Top-Left */}
       <div className="absolute top-6 left-6">
-        <img src={workLogo} alt="WorkNet Logo" className="w-16 h-16 rounded-full object-cover shadow-md" />
+        <img
+          src={workLogo}
+          alt="WorkNet Logo"
+          className="w-16 h-16 rounded-full object-cover shadow-md"
+        />
       </div>
+
+      {/* Login Card */}
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Login to Your Account</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Login to Your Account
+        </h2>
+
         <form className="space-y-4" onSubmit={handleLogin}>
           <input
             type="email"
@@ -53,6 +63,7 @@ function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -69,17 +80,25 @@ function Login() {
               {showPassword ? 'Hide' : 'Show'}
             </span>
           </div>
+
           {err && <p className="text-red-500 text-sm">{err}</p>}
+
           <button
             type="submit"
-            className={`w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300 ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
         <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign Up</a>
+          Don't have an account?{' '}
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>

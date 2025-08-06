@@ -47,14 +47,9 @@ function Nav() {
       {/* Left Section: Logo + Search */}
       <div className="flex items-center gap-3">
         {/* Centered (or left) WorkNet title */}
-        <div onClick={()=>{
-          setActiveSearch(false)
-          navigate("/")
-        }}>
-
-        </div>
         <h1
-          className="text-2xl font-extrabold text-blue-600 select-none cursor-default"
+          onClick={() => navigate("/")}
+          className="text-2xl font-extrabold text-blue-600 select-none cursor-pointer"
           style={{
             fontFamily: "'Montserrat', sans-serif",
             letterSpacing: "0.1em",
@@ -63,7 +58,6 @@ function Nav() {
         >
           WorkNet
         </h1>
-
 
         {/* Optional: Search bar */}
         <div className="hidden md:flex items-center bg-gray-100 rounded px-3 py-1 ml-6 w-[250px] md:w-[350px]">
@@ -105,7 +99,16 @@ function Nav() {
           className="flex flex-col items-center text-gray-700 hover:text-black cursor-pointer"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          <FaUserCircle size={22} />
+          {userData?.profileImage ? (
+            <img
+              src={userData.profileImage}
+              alt="Profile"
+              className="w-6 h-6 rounded-full object-cover"
+            />
+          ) : (
+            <FaUserCircle size={22} />
+          )}
+
           <span className="text-xs">Profile</span>
         </div>
 
@@ -114,7 +117,15 @@ function Nav() {
         {dropdownOpen && (
           <div className="absolute right-0 top-14 w-56 bg-white shadow-lg rounded-md py-4">
             <div className="flex flex-col items-center">
-              <FaUserCircle size={50} className="mb-2" />
+            {userData?.profileImage ? (
+                <img
+                  src={userData.profileImage}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full object-cover mb-2"
+                />
+              ) : (
+                <FaUserCircle size={50} className="mb-2" />
+              )}
               <div className="text-[19px] font-semibold text-gray-700">
                 {userData
                   ? `${userData.firstName} ${userData.lastName}`

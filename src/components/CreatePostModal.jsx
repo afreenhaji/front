@@ -6,19 +6,13 @@ import { authDataContext } from '../context/AuthContext';
 function CreatePostModal({ onClose }) {
   const { userData } = useContext(userDataContext);
   const [description, setDescription] = useState('');
-
-  const serverUrl = process.env.REACT_APP_API_URL;  // <-- Added this line
-
+  const { serverUrl } = useContext(authDataContext);
   const handlePost = async () => {
     try {
-      await axios.post(
-        `${serverUrl}/api/post/create`,  // <-- Dynamic URL
-        { description },
-        { withCredentials: true }  // <-- Important for cookies
-      );
+      await axios.post(`${serverUrl}/api/post/create`, { description }, { withCredentials: true });
       onClose(); // Close modal on success
     } catch (error) {
-      console.error("Post creation failed", error.response ? error.response.data : error.message); // <-- Better error logging
+      console.error("Post creation failed", error);
     }
   };
 
@@ -27,7 +21,7 @@ function CreatePostModal({ onClose }) {
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <img src={userData?.profileImage} className="w-10 h-10 rounded-full object-cover" alt="profile" />
+            <img src={userData?.profileImage} className="w-10 h-10 rounded-full object-cover" />
             <p className="font-semibold">{userData?.firstName} {userData?.lastName}</p>
           </div>
           <button onClick={onClose} className="text-xl font-bold">&times;</button>

@@ -1,21 +1,21 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import workLogo from '../assets/work.jpg';
-import axios from 'axios';
-import { userDataContext } from '../context/UserContext';
 import { authDataContext } from '../context/AuthContext';
+import axios from "axios";
+import { userDataContext } from '../context/UserContext';
 
 function Signup() {
   const navigate = useNavigate();
   const { serverUrl } = useContext(authDataContext);
   const { setUserData } = useContext(userDataContext);
 
-  const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -23,30 +23,46 @@ function Signup() {
     e.preventDefault();
     setLoading(true);
     setErr("");
+
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
         { firstName, lastName, userName, email, password },
         { withCredentials: true }
       );
-      console.log("User signed up:", result.data);
-      setUserData(result.data.user);
-      setLoading(false);
+
+      setUserData(result.data);
       navigate("/");
+
+      // Reset Form Fields After Navigation
+      setFirstName("");
+      setLastName("");
+      setUserName("");
+      setEmail("");
+      setPassword("");
     } catch (error) {
-      console.error("Signup Error:", error.response?.data || error.message);
+      console.error(error);
       setErr(error.response?.data?.message || "Signup failed");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 relative flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 relative flex items-center justify-center">
+      {/* Logo at Top-Left */}
       <div className="absolute top-6 left-6">
-        <img src={workLogo} alt="WorkNet Logo" className="w-16 h-16 rounded-full object-cover shadow-md" />
+        <img
+          src={workLogo}
+          alt="WorkNet Logo"
+          className="w-16 h-16 rounded-full object-cover shadow-md"
+        />
       </div>
+
+      {/* Signup Card */}
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Create your Account</h2>
+
         <form className="space-y-4" onSubmit={handleSignUp}>
           <div className="flex gap-4">
             <input
@@ -66,6 +82,7 @@ function Signup() {
               required
             />
           </div>
+
           <input
             type="text"
             placeholder="Username"
@@ -74,6 +91,7 @@ function Signup() {
             onChange={(e) => setUserName(e.target.value)}
             required
           />
+
           <input
             type="email"
             placeholder="Email"
@@ -82,6 +100,7 @@ function Signup() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -98,15 +117,18 @@ function Signup() {
               {showPassword ? "Hide" : "Show"}
             </span>
           </div>
+
           {err && <p className="text-red-500 text-sm">{err}</p>}
+
           <button
             type="submit"
             className={`w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
+
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account? <a href="/login" className="text-blue-600 hover:underline">Login</a>
         </p>

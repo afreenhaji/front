@@ -11,6 +11,7 @@ function EditProfile() {
   const { userData, fetchUserData } = useContext(userDataContext);
   const { serverUrl } = useContext(authDataContext);
 
+  // State Variables
   const [headline, setHeadline] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -45,6 +46,7 @@ function EditProfile() {
   const profileInputRef = useRef();
   const coverInputRef = useRef();
 
+  // Image Upload
   const handleImageUpload = async (file, type) => {
     try {
       const formData = new FormData();
@@ -54,7 +56,7 @@ function EditProfile() {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      return res.data.user[type === 'profile' ? 'profileImage' : 'coverImage'];
+      return res.data.url;
     } catch (error) {
       console.error('Image upload failed', error);
       alert('Image upload failed. Please try again.');
@@ -72,6 +74,8 @@ function EditProfile() {
       skill: skills,
       education,
       experience,
+      profileImage,
+      coverImage,
       email,
       bio,
     };
@@ -96,40 +100,68 @@ function EditProfile() {
     setSkills(skills.filter((_, i) => i !== index));
   };
 
+  const handleAddEducation = () => {
+    setEducation([...education, { college: '', degree: '', fieldOfStudy: '' }]);
+  };
+
+  const handleEducationChange = (index, field, value) => {
+    const updated = [...education];
+    updated[index][field] = value;
+    setEducation(updated);
+  };
+
+  const removeEducation = (index) => {
+    setEducation(education.filter((_, i) => i !== index));
+  };
+
+  const handleAddExperience = () => {
+    setExperience([...experience, { title: '', company: '', description: '' }]);
+  };
+
+  const handleExperienceChange = (index, field, value) => {
+    const updated = [...experience];
+    updated[index][field] = value;
+    setExperience(updated);
+  };
+
+  const removeExperience = (index) => {
+    setExperience(experience.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="w-full min-h-screen bg-[#f0efe7] flex justify-center pt-[80px] px-4">
       <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 relative mt-10">
-        <button
-          className="absolute top-4 right-4 md:top-6 md:right-6 text-gray-700 hover:text-black bg-white rounded-full shadow p-1 z-50"
-          onClick={() => navigate(-1)}
-          aria-label="Close Edit Profile"
-        >
-          <IoMdClose size={24} />
-        </button>
-
+            <button
+        className="absolute top-4 right-4 md:top-6 md:right-6 text-gray-700 hover:text-black bg-white rounded-full shadow p-1 z-50"
+        onClick={() => navigate(-1)}
+        aria-label="Close Edit Profile"
+      >
+        <IoMdClose size={24} />
+      </button>
         {/* Cover Image */}
-        <div className="w-full h-[100px] bg-gray-300 rounded relative overflow-hidden">
-          {coverImage && (
-            <img src={coverImage} className="w-full h-full object-cover rounded" alt="Cover" />
-          )}
-          <div
-            onClick={() => coverInputRef.current.click()}
-            className="absolute bottom-2 right-2 bg-white p-1 rounded-full cursor-pointer shadow-md"
-          >
-            <FaCamera size={16} />
-            <input
-              ref={coverInputRef}
-              type="file"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                const url = await handleImageUpload(file, 'cover');
-                if (url) setCoverImage(url);
-              }}
-              accept="image/*"
-            />
-          </div>
-        </div>
+<div className="w-full h-[100px] bg-gray-300 rounded relative overflow-hidden">
+  {coverImage && (
+    <img src={coverImage} className="w-full h-full object-cover rounded" alt="Cover" />
+  )}
+  <div
+    onClick={() => coverInputRef.current.click()}
+    className="absolute bottom-2 right-2 bg-white p-1 rounded-full cursor-pointer shadow-md"
+  >
+    <FaCamera size={16} />
+    <input
+      ref={coverInputRef}
+      type="file"
+      className="hidden"
+      onChange={async (e) => {
+        const file = e.target.files[0];
+        const url = await handleImageUpload(file, 'cover');
+        if (url) setCoverImage(url);
+      }}
+      accept="image/*"
+    />
+  </div>
+</div>
+
 
         {/* Profile Image */}
         <div className="relative w-[80px] h-[80px] -mt-10 mx-auto">

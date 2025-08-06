@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from 'react';
-import Nav from '../components/Nav';
 import { userDataContext } from '../context/UserContext';
 import { FaCamera, FaUserCircle, FaRegClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +21,7 @@ function Home() {
   const { userData } = useContext(userDataContext);
   const { serverUrl } = useContext(authDataContext);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);  // Ensure posts is initialized as array
   const [loadingPosts, setLoadingPosts] = useState(true);
   const navigate = useNavigate();
 
@@ -30,8 +29,15 @@ function Home() {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const res = await axios.get(`${serverUrl}/api/post/feed`, { withCredentials: true });
-        setPosts(res.data);
+        const res = await axios.get(`${serverUrl}/api/post/feed`, {
+          withCredentials: true,
+        });
+        console.log("Fetched Posts Data:", res.data);
+        if (Array.isArray(res.data)) {
+          setPosts(res.data);
+        } else {
+          setPosts([]);
+        }
       } catch (error) {
         console.error('Failed to fetch posts:', error);
         setPosts([]);
@@ -43,21 +49,22 @@ function Home() {
     fetchPosts();
   }, [serverUrl, showPostModal]);
 
-  const skillsArray = Array.isArray(userData?.skill) ? userData.skill : [];
-
   return (
     <div className="relative w-full min-h-screen bg-[#f0efe7]">
       {showPostModal && <div className="fixed inset-0 bg-black bg-opacity-60 z-40" />}
-      <Nav />
-
       {showPostModal && <CreatePostModal onClose={() => setShowPostModal(false)} />}
 
       <div className="flex flex-col md:flex-row justify-center gap-6 pt-[80px] px-4 relative z-10">
+        {/* Left Profile Card */}
         <div className="w-full md:w-[320px] bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="relative">
             <div className="w-full h-[120px] bg-gray-200 relative">
               {userData?.coverImage && (
-                <img src={userData.coverImage} alt="Cover" className="w-full h-full object-cover" />
+                <img
+                  src={userData.coverImage}
+                  alt="Cover"
+                  className="w-full h-full object-cover"
+                />
               )}
               <div
                 className="absolute top-2 right-2 bg-white p-1 rounded-full shadow cursor-pointer"
@@ -101,12 +108,11 @@ function Home() {
                 {userData.bio}
               </p>
             )}
-
-            {skillsArray.length > 0 && (
+            {userData?.skill?.length > 0 && (
               <div className="mt-4 text-left">
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 text-center">Skills</h3>
                 <ul className="space-y-2">
-                  {skillsArray.map((skill, index) => (
+                  {userData.skill.map((skill, index) => (
                     <li
                       key={index}
                       className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-md w-full text-center"
@@ -117,7 +123,6 @@ function Home() {
                 </ul>
               </div>
             )}
-
             <button
               onClick={() => navigate('/edit-profile')}
               className="w-full mt-5 bg-blue-600 text-white font-semibold rounded-full py-2 hover:bg-blue-700 transition"
@@ -127,13 +132,19 @@ function Home() {
           </div>
         </div>
 
+        {/* Center Feed */}
         <div className="flex-1 flex flex-col gap-4">
           <div className="bg-white rounded-lg p-4 shadow-md flex items-center gap-3">
-            <img
-              src={userData?.profileImage}
-              alt="user"
-              className="w-10 h-10 rounded-full object-cover"
-            />
+            {userData?.profileImage ? (
+              <img
+                src={userData.profileImage}
+                alt="user"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <FaUserCircle size={40} className="text-gray-400" />
+            )}
+
             <div
               onClick={() => setShowPostModal(true)}
               className="flex-1 border border-gray-300 rounded-full px-4 py-2 cursor-pointer text-gray-600 hover:bg-gray-100"
@@ -145,9 +156,7 @@ function Home() {
           <div className="bg-white min-h-[300px] rounded-2xl shadow-md p-4 space-y-6 overflow-y-auto max-h-[70vh]">
             {loadingPosts ? (
               <div className="text-center text-gray-500">Loading posts...</div>
-            ) : posts.length === 0 ? (
-              <div className="text-center text-gray-500">No posts yet.</div>
-            ) : (
+            ) : Array.isArray(posts) && posts.length > 0 ? (
               posts.map((post) => (
                 <div key={post._id} className="border rounded-lg p-4 shadow-sm">
                   <div className="flex items-center gap-3">
@@ -183,12 +192,15 @@ function Home() {
                   )}
                 </div>
               ))
+            ) : (
+              <div className="text-center text-gray-500">No posts yet.</div>
             )}
           </div>
         </div>
 
+        {/* Right Sidebar (Widgets) */}
         <div className="w-full md:w-[250px] bg-white min-h-[400px] rounded-2xl shadow-md hidden md:block">
-          {/* Sidebar widgets */}
+          {/* Sidebar widgets placeholder */}
         </div>
       </div>
     </div>
