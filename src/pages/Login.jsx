@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import workLogo from '../assets/work.jpg';
 import axios from 'axios';
 import { userDataContext } from '../context/UserContext';
-import { authDataContext } from '../context/AuthContext';  // Added this import
+import { authDataContext } from '../context/AuthContext';
 
 function Login() {
   const navigate = useNavigate();
   const { setUserData } = useContext(userDataContext);
-  const { serverUrl } = useContext(authDataContext);  // Correct usage from context
+  const { serverUrl } = useContext(authDataContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,12 +26,12 @@ function Login() {
         { email, password },
         { withCredentials: true }
       );
-      console.log("User logged in:", result.data.user);
-      setUserData(result.data.user);
+      console.log("User logged in:", result.data);
+      setUserData(result.data);
       setLoading(false);
       navigate('/');
     } catch (error) {
-      console.error(error);
+      console.error("Login Error:", error.response?.data || error.message);
       setErr(error.response?.data?.message || 'Login failed');
       setLoading(false);
     }
