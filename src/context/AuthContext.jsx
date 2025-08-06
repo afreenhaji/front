@@ -4,7 +4,7 @@ import React, { createContext } from "react";
 export const authDataContext = createContext();
 
 function AuthContext({ children }) {
-  const serverUrl = process.env.REACT_APP_API_URL;  // Dynamically reads from .env
+  const serverUrl = import.meta.env.VITE_API_URL;
 
   return (
     <authDataContext.Provider value={{ serverUrl }}>

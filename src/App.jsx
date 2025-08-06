@@ -9,11 +9,7 @@ import Profiles from './pages/Profiles';
 import Layout from './components/Layout';
 
 export default function App() {
-    const { userData, loading } = useContext(userDataContext);
-
-    if (loading) {
-        return <div className="text-center mt-10">Loading...</div>;
-    }
+    const { userData } = useContext(userDataContext);  // ✅ Removed loading
 
     return (
         <Routes>

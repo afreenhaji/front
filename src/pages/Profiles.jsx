@@ -2,17 +2,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
-import { FaCamera, FaUserCircle } from 'react-icons/fa';
 import { authDataContext } from '../context/AuthContext';
+import { FaCamera, FaUserCircle } from 'react-icons/fa';
 
 function Profiles() {
   const { userData, setUserData } = useContext(userDataContext);
+  const { serverUrl } = useContext(authDataContext);  // ✅ Correct Usage
   const [userPosts, setUserPosts] = useState([]);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(userData?.bio || "");
-  const serverUrl = process.env.REACT_APP_API_URL;
-
-  const navigate = useNavigate();  // <-- For navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -27,7 +26,7 @@ function Profiles() {
     if (userData?._id) {
       fetchUserPosts();
     }
-  }, [userData]);
+  }, [userData, serverUrl]);
 
   const handleUpdateBio = async () => {
     try {
@@ -58,7 +57,7 @@ function Profiles() {
           )}
           <div
             className="absolute top-3 right-3 bg-white p-2 rounded-full shadow cursor-pointer"
-            onClick={() => navigate('/edit-profile')}  // <-- Navigate to EditProfile
+            onClick={() => navigate('/edit-profile')}
           >
             <FaCamera size={18} />
           </div>
@@ -78,7 +77,7 @@ function Profiles() {
             )}
             <div
               className="absolute bottom-0 right-0 bg-blue-600 w-6 h-6 rounded-full text-white text-xs flex justify-center items-center cursor-pointer"
-              onClick={() => navigate('/edit-profile')}  // <-- Navigate to EditProfile
+              onClick={() => navigate('/edit-profile')}
             >
               +
             </div>
